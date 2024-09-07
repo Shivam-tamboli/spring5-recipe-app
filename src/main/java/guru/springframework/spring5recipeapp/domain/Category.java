@@ -1,18 +1,23 @@
 package guru.springframework.spring5recipeapp.domain;
 
 import javax.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.Set;
 
 @Getter
 @Setter
+//@EqualsAndHashCode(exclude = {"recipes"})
 @Entity
-public class UnitOfMeasure {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String description;
 
-
+    @ManyToMany(mappedBy = "categories")
+    private Set<Recipe> recipes;
 }
+

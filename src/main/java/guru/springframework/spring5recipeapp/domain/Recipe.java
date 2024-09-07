@@ -1,108 +1,50 @@
 package guru.springframework.spring5recipeapp.domain;
 
-import jakarta.persistence.*;
-import java.util.*;
+import javax.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-//my recipe class has properties.
+import java.util.HashSet;
+import java.util.Set;
+//generate automatically getters and setters method.
+@Getter
+@Setter
+//tells jpa it will be mapped to a table in the database.
 @Entity
 public class Recipe {
+//primary key of the entity.
     @Id
+//automatically generate the unique value for the primary key when the new record is inserted.
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    properties.
     private Long id;
 
     private String description;
     private Integer prepTime;
     private Integer cookTime;
-    private Integer servings;
-    private String source;
-    private String url;
+    private Difficulty difficulty;
+    @Lob
     private String directions;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
-    private Set<Ingredient> ingredientSet;
+// represents the onetomany relationship.
+// any changes to the recipe will also affect its related in
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", orphanRemoval = true)
+    private Set<Ingredient> ingredients = new HashSet<>();
 
-    @Lob
-    private Byte[] image;
+    @ManyToMany
+    @JoinTable(name = "recipe_category",
+            joinColumns = @JoinColumn(name = "recipe_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private Set<Category> categories = new HashSet<>();
+
     @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "notes_id")
     private Notes notes;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Integer getPrepTime() {
-        return prepTime;
-    }
-
-    public void setPrepTime(Integer prepTime) {
-        this.prepTime = prepTime;
-    }
-
-    public Integer getCookTime() {
-        return cookTime;
-    }
-
-    public void setCookTime(Integer cookTime) {
-        this.cookTime = cookTime;
-    }
-
-    public Integer getServings() {
-        return servings;
-    }
-
-    public void setServings(Integer servings) {
-        this.servings = servings;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getDirections() {
-        return directions;
-    }
-
-    public void setDirections(String directions) {
-        this.directions = directions;
-    }
-
-    public Byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(Byte[] image) {
-        this.image = image;
-    }
-
-    public Notes getNotes() {
-        return notes;
-    }
-
-    public void setNotes(Notes notes) {
-        this.notes = notes;
+    public Recipe addIngredient(Ingredient ingredient) {
+        ingredient.setRecipe(this);
+            this.ingredients.add(ingredient);
+            return this;
     }
 }

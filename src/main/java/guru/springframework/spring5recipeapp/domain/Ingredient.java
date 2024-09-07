@@ -1,61 +1,52 @@
 package guru.springframework.spring5recipeapp.domain;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-
+//it will generate the get and set method.
+@Getter
+@Setter
+@EqualsAndHashCode(exclude = {"recipe"})
+//tells jpa this class will be mapped to a table in database.
 @Entity
 public class Ingredient {
-
+// primary key of entity.
     @Id
+// automatically generate the unique value for the entity when the new record is inserted.
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+// fields or properties of the class,representing the columns in the database table.
     private Long id;
     private String description;
     private BigDecimal amount;
-
+//represents the OneTOone relationship.
     @OneToOne(fetch = FetchType.EAGER)
+//specifies the foreign key column in the database.
+    @JoinColumn(name = "uom_id")
     private UnitOfMeasure uom;
-
+//represents the ManyTOone relationship with recipe entity.
     @ManyToOne
+//specify the foreign key column in the database.
+    @JoinColumn(name = "recipe_id")
     private Recipe recipe;
 
-    public Long getId() {
-        return id;
+    // No-arg constructor required by JPA
+    protected Ingredient() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
+    public Ingredient(String description, BigDecimal amount, UnitOfMeasure uom) {
         this.description = description;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
         this.amount = amount;
-    }
-
-    public UnitOfMeasure getUom() {
-        return uom;
-    }
-
-    public void setUom(UnitOfMeasure uom) {
         this.uom = uom;
     }
 
-    public Recipe getRecipe() {
-        return recipe;
-    }
-
-    public void setRecipe(Recipe recipe) {
+    public Ingredient(String description, BigDecimal amount, UnitOfMeasure uom, Recipe recipe) {
+        this.description = description;
+        this.amount = amount;
+        this.uom = uom;
         this.recipe = recipe;
     }
 }
+

@@ -1,39 +1,27 @@
 package guru.springframework.spring5recipeapp.domain;
 
-import jakarta.persistence.*;
-
-// my notes class has a recipe property.
+import javax.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+//generate automatically the get and set methods.
+@Getter
+@Setter
+@EqualsAndHashCode(exclude = {"recipe"})
+//tells jpa this will be  mapped to a table into the database.
 @Entity
 public class Notes {
+//primary key of the entity.
     @Id
+// automatically generate the unique value for entity when the new record is inserted.
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+// properties.
     private Long id;
-    @OneToOne
-    private Recipe recipe;
+
     @Lob
     private String recipeNotes;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Recipe getRecipe() {
-        return recipe;
-    }
-
-    public void setRecipe(Recipe recipe) {
-        this.recipe = recipe;
-    }
-
-    public String getRecipeNotes() {
-        return recipeNotes;
-    }
-
-    public void setRecipeNotes(String recipeNotes) {
-        this.recipeNotes = recipeNotes;
-    }
+//represents the One to One relationship
+    @OneToOne(mappedBy = "notes")
+    // 'mappedBy = "notes"' indicates that the Recipe entity owns the relationship.
+    private Recipe recipe;
 }
