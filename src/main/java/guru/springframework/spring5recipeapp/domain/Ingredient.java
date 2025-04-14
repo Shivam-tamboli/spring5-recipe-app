@@ -33,7 +33,7 @@ public class Ingredient {
     private Recipe recipe;
 
     // No-arg constructor required by JPA
-    protected Ingredient() {
+    public Ingredient() {
     }
 
     public Ingredient(String description, BigDecimal amount, UnitOfMeasure uom) {

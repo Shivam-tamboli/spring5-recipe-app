@@ -13,38 +13,57 @@ import java.util.Set;
 @Entity
 public class Recipe {
 //primary key of the entity.
-    @Id
-//automatically generate the unique value for the primary key when the new record is inserted.
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    properties.
-    private Long id;
+// automatically generate the unique value for the primary key when the new record is inserted.
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String description;
     private Integer prepTime;
     private Integer cookTime;
     private Difficulty difficulty;
-    @Lob
+    private Integer servings;
+    private String source;
+    private String url;
+
+    @Lob //    field will be stored as a large object in the database
     private String directions;
 
-// represents the onetomany relationship.
-// any changes to the recipe will also affect its related in
+// each recipe can have multiple ingredients.
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", orphanRemoval = true)
     private Set<Ingredient> ingredients = new HashSet<>();
 
+    @Lob
+    private Byte[] image;
+
+//each recipe can belong to multiple categories,each category can include multiple recipes.
+//many-to-many relationships require a join table to link the two entities
     @ManyToMany
     @JoinTable(name = "recipe_category",
             joinColumns = @JoinColumn(name = "recipe_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<Category> categories = new HashSet<>();
+    private Set<Category> categories = new HashSet<>();// set ensure each category is unique in set.
 
+//each recipes have one associated notes.
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "notes_id")
     private Notes notes;
 
 
+
+    public void setNotes(Notes notes) {
+        if (notes != null) {
+            this.notes = notes;
+            notes.setRecipe(this);
+        }
+    }
+
+// Adds an ingredient to the recipe and ensures the bidirectional relationship is maintained.
     public Recipe addIngredient(Ingredient ingredient) {
         ingredient.setRecipe(this);
             this.ingredients.add(ingredient);
             return this;
     }
+
+
 }
